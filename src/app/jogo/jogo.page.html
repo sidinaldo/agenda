@@ -12,45 +12,39 @@
 <ion-content>
   <ion-grid>
     <ion-row align-items-center justify-content-center>
-      <ion-col col-12 col-sm-12 col-md-6>
+      <ion-col col-12 col-sm-12 col-md-12>
         <form [formGroup]="form">
           <h1 text-center class="oleo-script">Cadastro de jogo</h1>
           <ion-list>
-            <ion-input type="hidden"  formControlName="mandante"></ion-input>
-            <ion-input type="hidden" formControlName="visitante"></ion-input>
-
+            <ion-item>
+              <ion-button (click)="addClubes()">Add Clubes</ion-button>
+            </ion-item>
+            <ion-item>
+              <ion-label slot="start">{{nomeMandante || "Mandante"}}</ion-label>&nbsp;&nbsp;
+              <ion-input type="number" placeholder="Gol Mandante" formControlName="golsMandante" slot="end"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label slot="start">{{nomeVisitante || "Visitante"}}</ion-label>&nbsp;&nbsp;
+              <ion-input type="number" placeholder="Gol Visitante" formControlName="golsVisitante" slot="end"></ion-input>
+            </ion-item>
             <ion-item>
               <ion-label>Data e hora</ion-label>
               <ion-datetime displayFormat="D MMM YYYY H:mm" min="2009" formControlName="data"></ion-datetime>
             </ion-item>
             <ion-item>
-              <ion-label>Campo</ion-label>
+              <ion-label>{{nomeCampo|| "Campo"}}</ion-label>
               <ion-select id="customPopoverSelect" interface="popover" placeholder="Select One" formControlName="campo">
-                <ion-select-option *ngFor="let item of campos" [value]="item.key" value="item.key">{{item.campo.nome}}</ion-select-option>
+                <ion-select-option *ngFor="let item of campos" [value]="item">{{item.nome}}</ion-select-option>
               </ion-select>
             </ion-item>
-            <ion-item>
-              <ion-button (click)="addClubes()" color="medium">Clear</ion-button>&nbsp;
-            </ion-item>
-            <ion-item>
-              <ion-input type="text" placeholder="Mandante" formControlName="nomeMandante"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input type="text" placeholder="Visitante" formControlName="nomeVisitante"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-col col-6 col-sm-6 col-md-6>
-                <ion-input type="number" placeholder="Gol Mandante" formControlName="golsMandante"></ion-input>
-              </ion-col>
-              <ion-col col-6 col-sm-6 col-md-6>
-                <ion-input type="number" placeholder="Gol Visitante" formControlName="golsVisitante"></ion-input>
-              </ion-col>
-
-            </ion-item>
-            <ion-item lines="full">
+            <!-- <ion-item lines="full">
               <ion-checkbox color="primary" formControlName="status" [value]="form.value.status"></ion-checkbox>&nbsp;
               <ion-label>Aberto</ion-label>
-            </ion-item>
+            </ion-item> -->
+            <ion-item>
+                <ion-label>Aberto</ion-label>
+                <ion-toggle formControlName="status"  (ionChange)="getStatus($event)" [checked]="status"></ion-toggle>
+              </ion-item>
             <ion-item>
               <ion-label color="primary">Observação</ion-label>
               <ion-textarea formControlName="observacao"></ion-textarea>
@@ -76,8 +70,8 @@
       </ion-avatar>
       <ion-label>
         <h2> {{item.data | date:'shortDate'}}</h2>
-        <h3>{{item.campo}}</h3>
-        <p>{{item.mandante}} {{item.golsMandante}} x {{item.golsVisitante}} {{item.visitante}}</p>
+        <h3>{{item.campo.nome}}</h3>
+        <p>{{item.mandante.nome}} {{item.golsMandante}} x {{item.golsVisitante}} {{item.visitante.nome}}</p>
       </ion-label>
     </ion-item>
   </ion-list>

@@ -34,15 +34,10 @@ export class ListClubePage {
     this.filter = this.items;
   }
 
-
-  submit() {
-
-  }
-
   dismiss() {
-    this.modalCtl.dismiss({
-      clubes: this.checked()
-    });
+    this.modalCtl.dismiss(
+      this.checked()
+    );
   }
 
   checked(): any {

@@ -12,9 +12,9 @@
 <ion-content>
   <ion-list class="oleo-script">
     <ion-list-header>
-      <ion-label>Lista de Clubes</ion-label>
+      <ion-label>Lista de clubes</ion-label>
     </ion-list-header>
-     <ion-button (click)="dismiss()" color="success">List</ion-button>    
+    <ion-button (click)="dismiss()" color="success">List</ion-button>
     <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
     <ion-item *ngFor="let entry of filter">
       <ion-label>{{entry.clube.nome}}</ion-label>

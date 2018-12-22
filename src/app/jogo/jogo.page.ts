@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 import { AlertController, LoadingController, ActionSheetController, ModalController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
@@ -25,13 +25,16 @@ export class JogoPage {
   public campoRef: AngularFireList<any>;
   public campos: Array<any> = [];
   public clubes: any;
+  public nomeMandante: string;
+  public nomeVisitante: string;
+  public nomeCampo: string;
+  public status: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private db: AngularFireDatabase,
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
-    private route: ActivatedRoute,
     public actionSheetCtrl: ActionSheetController,
     public modalCtl: ModalController
   ) {
@@ -46,12 +49,10 @@ export class JogoPage {
       mandante: ['', Validators.compose([
         Validators.required
       ])],
-      nomeMandante: [''],
       visitante: ['', Validators.compose([
         Validators.required
       ])],
-      nomeVisitante: [''],
-      status: ['', Validators.compose([
+      status: [false, Validators.compose([
         Validators.required
       ])],
       observacao: ['', Validators.compose([
@@ -59,7 +60,7 @@ export class JogoPage {
       ])],
       golsVisitante: [''],
       golsMandante: [''],
-      jogadores: ['']
+      jogadores: [''],
     });
 
 
@@ -78,8 +79,8 @@ export class JogoPage {
     this.campoRef = db.list('campos');
     this.campoRef.snapshotChanges(['child_added']).subscribe(actions => {
       actions.forEach(action => {
-        var obj = { key: action.key, campo: action.payload.val() }
-        this.campos.push(obj);
+        const object2 = Object.assign({ key: action.key }, action.payload.val());
+        this.campos.push(object2);
       });
       console.log(this.campos)
     });
@@ -88,6 +89,21 @@ export class JogoPage {
     for (let index = 2009; index <= ano; index++) {
       this.anos.push(index);
     }
+
+    this.form.controls['campo'].valueChanges.subscribe(res => {
+      console.log(res)
+      this.nomeCampo = res.bairro
+    });
+
+  }
+
+  getStatus(ev: any) {
+    const val = ev.detail.checked;  
+      this.form.patchValue({
+        status: val
+      });
+  
+    console.log(this.form.value);
   }
 
 
@@ -97,44 +113,51 @@ export class JogoPage {
     });
 
     modal.onDidDismiss()
-      .then((data) => {
-       this.form.patchValue({
-        mandante: data.data.clubes[0].key,
-        visitante: data.data.clubes[1].key,
-        nomeMandante: data.data.clubes[0].clube.nome,
-        nomeVisitante: data.data.clubes[1].clube.nome
-       });
-    });
+      .then((res) => {
+        this.form.patchValue({
+          mandante: res.data[0].clube,
+          visitante: res.data[1].clube
+        });
+        this.nomeMandante = res.data[0].clube.nome;
+        this.nomeVisitante = res.data[1].clube.nome;
+
+      });
 
     return await modal.present();
   }
 
   async addItem() {
     console.log(this.form.value)
-    // const loading = await this.loadingCtrl.create({
-    //   message: 'Salvando jogo...',
-    //   duration: 2000
-    // });
-    // await loading.present();
-    // this.db.list('/jogos').push(this.form.value).then(res => {
-    //   this.form.reset();
-    //   return loading.dismiss();
-    // }, async (err) => {
-    //   loading.dismiss();
-    //   let alert = await this.alertCtrl.create({
-    //     header: 'Alert',
-    //     subHeader: 'Ops, algo deu errado',
-    //     message: 'Você não tem permissão.',
-    //     buttons: ['OK']
-    //   });
-    //   return alert.present();
-    // });
+    const loading = await this.loadingCtrl.create({
+      message: 'Salvando jogo...',
+      duration: 2000
+    });
+    await loading.present();
+    this.db.list('/jogos').push(this.form.value).then(res => {
+      this.form.reset();
+      this.nomeMandante = '';
+      this.nomeVisitante = '';
+      this.nomeCampo = ''
+      return loading.dismiss();
+    }, async (err) => {
+      loading.dismiss();
+      let alert = await this.alertCtrl.create({
+        header: 'Alert',
+        subHeader: 'Ops, algo deu errado',
+        message: 'Você não tem permissão.',
+        buttons: ['OK']
+      });
+      return alert.present();
+    });
   }
 
   async updateItem() {
     this.jogoRef.update(this.form.controls['key'].value, this.form.value).then(res => {
       this.editar = false;
       this.form.reset();
+      this.nomeMandante = '';
+      this.nomeVisitante = '';
+      this.nomeCampo = ''
     }).catch(err => {
       let alert = this.alertCtrl.create({
         header: 'Alert',
@@ -168,6 +191,7 @@ export class JogoPage {
           text: 'Edit',
           icon: 'create',
           handler: () => {
+            console.log(newText, key)
             this.editar = true;
             this.form.patchValue({
               key: newText.key,
@@ -181,7 +205,10 @@ export class JogoPage {
               golsMandante: newText.golsMandante,
               jogadores: newText.jogadores
             });
-            console.log(this.form.value)
+            this.nomeMandante = newText.mandante.nome;
+            this.nomeVisitante = newText.visitante.nome;
+            this.nomeCampo = newText.campo.nome;
+            this.status = newText.status;
           }
         },
         {
@@ -209,6 +236,9 @@ export class JogoPage {
   clear() {
     this.form.reset();
     this.editar = false;
+    this.nomeMandante = '';
+    this.nomeVisitante = '';
+    this.nomeCampo = ''
   }
 
   addJogador(): any {
