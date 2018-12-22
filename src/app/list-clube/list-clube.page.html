@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar text-center color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Lista de Clubes
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list class="oleo-script">
+    <ion-list-header>
+      <ion-label>Lista de Clubes</ion-label>
+    </ion-list-header>
+     <ion-button (click)="dismiss()" color="success">List</ion-button>    
+    <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
+    <ion-item *ngFor="let entry of filter">
+      <ion-label>{{entry.clube.nome}}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="entry.isChecked"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar color="primary" text-center>
+    <ion-icon ios="ios-pin" md="md-pin"></ion-icon>
+    Olho D'água do Carrilho - S. G. do Amarante
+  </ion-toolbar>
+</ion-footer>

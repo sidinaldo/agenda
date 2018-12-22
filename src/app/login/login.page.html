@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-toolbar color="primary" text-center>
+    <ion-buttons slot="secondary" *ngIf="user">
+      <ion-button (click)="logout()">
+        <ion-icon slot="icon-only" name="log-out"></ion-icon>
+      </ion-button>
+      Sair
+    </ion-buttons>
+    <ion-title *ngIf="user">{{user.displayName}}</ion-title>
+    <ion-title *ngIf="!user">Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>  
+  <ion-grid>
+      <br><br><br>
+      <ion-row>
+        <ion-col text-center >
+          <ion-text color="medium" color="primary">
+           <h1>Olho D'água Futebol Clube</h1>
+          </ion-text>
+        </ion-col>
+      </ion-row>
+      <br>
+    <ion-row align-items-center justify-content-center>
+      <ion-col size="12" size-sm="6" size-md="6" size-lg="6" size-xl="3">
+        <form [formGroup]="form">
+          <br>
+          <ion-list>
+            <ion-item>
+              <ion-label position="floating">Login</ion-label>
+              <ion-input type="text" formControlName="email"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Senha</ion-label>
+              <ion-input type="text" formControlName="password"></ion-input>
+            </ion-item>
+          </ion-list>
+          <ion-button expand="full" shape="round" (click)="submit()" >Entra</ion-button>
+        </form>
+      </ion-col>
+    </ion-row>
+    <br>
+    <ion-row>
+      <ion-col text-center>
+        <ion-text color="medium">
+          Olá! Escolha uma opção para entrar
+        </ion-text>
+      </ion-col>
+    </ion-row>
+    <br>
+    <ion-row text-center>
+      <ion-col>
+        <ion-button (click)="loginFacebook()">
+          <ion-icon slot="start" name="logo-facebook"></ion-icon>
+          Facebook
+        </ion-button>
+        <ion-button color="danger" color="success">
+          <ion-icon slot="start" name="logo-whatsapp"></ion-icon>
+          Número
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+
+</ion-content>

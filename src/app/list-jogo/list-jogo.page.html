@@ -1,0 +1,98 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close" size="large"></ion-icon>
+      </ion-button>
+      <!-- <ion-menu-button></ion-menu-button> -->
+    </ion-buttons>
+    <ion-title>
+      List
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form">
+      <h1 text-center class="oleo-script">Jogos</h1>
+    <ion-item>
+      <ion-label>Ano</ion-label>
+      <ion-select [interfaceOptions]="customPopoverOptions" interface="popover" placeholder="Selecione o ano"
+        formControlName="ano">
+        <ion-select-option value="brown" *ngFor="let ano of anos" [value]="ano">{{ ano}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Mês</ion-label>
+      <ion-select [interfaceOptions]="customPopoverOptions" interface="popover" placeholder="Selecione o mês"
+        formControlName="mes" disabled>
+        <ion-select-option value="1">Janeiro</ion-select-option>
+        <ion-select-option value="2">Fevereiro</ion-select-option>
+        <ion-select-option value="3">Março</ion-select-option>
+        <ion-select-option value="4">Abril</ion-select-option>
+        <ion-select-option value="5">Maio</ion-select-option>
+        <ion-select-option value="6">Junho</ion-select-option>
+        <ion-select-option value="7">Julho</ion-select-option>
+        <ion-select-option value="8">Agosto</ion-select-option>
+        <ion-select-option value="9">Setembro</ion-select-option>
+        <ion-select-option value="10">Outubro</ion-select-option>
+        <ion-select-option value="11">Novembro</ion-select-option>
+        <ion-select-option value="12">Dezembro</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </form>
+
+  <ion-list class="oleo-script">
+    <ion-list-header>
+      <ion-label>Lista de jogos</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let item of listFilter" (click)="acao(item)">
+      <ion-avatar slot="start">
+        <ion-icon name="md-albums"></ion-icon>
+      </ion-avatar>
+      <ion-label>
+        <h2> {{item.jogo.data | date:'shortDate'}}</h2>
+        <h3>{{item.jogo.campo}}</h3>
+        <p>{{item.jogo.mandante}} {{item.jogo.golsMandante}} x {{item.jogo.golsVisitante}} {{item.jogo.visitante}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+
+  <!-- <ion-grid padding>
+    <ion-title text-center class="oleo-script">Lista de jogos</ion-title>
+    <ion-row class="header-grid">
+      <ion-col text-center>
+        <ion-label> Data </ion-label>
+      </ion-col>
+      <ion-col text-center>
+        <ion-label> Adverssário </ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngFor="let item of items" (click)="acao(item)">
+      <ion-col text-center>
+        {{item.jogo.data | date:'shortDate'}}
+      </ion-col>
+      <ion-col text-center>
+        {{item.jogo.mandante}}
+      </ion-col>
+    </ion-row>
+  </ion-grid> -->
+
+  <!-- <ion-list>
+    <ion-item>
+      <ul>
+        <li *ngFor="let item of items">
+          <button (click)="updateItem(item)">Update</button>         
+        </li>
+      </ul>      
+    </ion-item>
+  </ion-list> -->
+
+</ion-content>
+<ion-footer>
+  <ion-toolbar color="primary" text-center>
+    <ion-title>Footer</ion-title>
+  </ion-toolbar>
+</ion-footer>
