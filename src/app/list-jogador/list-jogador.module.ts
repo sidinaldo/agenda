@@ -3,9 +3,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { JogoPage } from './jogo.page';
-import { ListClubePage } from '../list-clube/list-clube.page';
-import { ListJogadorPage } from '../list-jogador/list-jogador.page';
+import { ListJogadorPage } from './list-jogador.page';
 
   
 
@@ -17,18 +15,12 @@ import { ListJogadorPage } from '../list-jogador/list-jogador.page';
     ReactiveFormsModule,
     RouterModule.forChild(
       [
-        { path: '', component: JogoPage }
+        { path: '', component: ListJogadorPage }
       ]
       )
   ],
   declarations: [
-    JogoPage,
-    ListClubePage,
-    ListJogadorPage
-  ],
-  entryComponents:[
-    ListClubePage,
     ListJogadorPage
   ]
 })
-export class JogoPageModule {}
+export class ListJogadorPageModule {}

@@ -43,6 +43,11 @@ export class AppComponent {
       icon: 'ribbon'
     },
     {
+      title: 'Jogador',
+      url: '/jogador',
+      icon: 'ribbon'
+    },
+    {
       title: 'Lista de clubes',
       url: '/list',
       icon: 'ribbon'

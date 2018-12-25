@@ -17,7 +17,8 @@
           <h1 text-center class="oleo-script">Cadastro de jogo</h1>
           <ion-list>
             <ion-item>
-              <ion-button (click)="addClubes()">Add Clubes</ion-button>
+              <ion-button (click)="addClubes()">Add Clubes</ion-button>&nbsp;
+              <ion-button (click)="addPlayers()">Add Jogadores</ion-button>
             </ion-item>
             <ion-item>
               <ion-label slot="start">{{nomeMandante || "Mandante"}}</ion-label>&nbsp;&nbsp;
@@ -37,14 +38,6 @@
                 <ion-select-option *ngFor="let item of campos" [value]="item">{{item.nome}}</ion-select-option>
               </ion-select>
             </ion-item>
-            <!-- <ion-item lines="full">
-              <ion-checkbox color="primary" formControlName="status" [value]="form.value.status"></ion-checkbox>&nbsp;
-              <ion-label>Aberto</ion-label>
-            </ion-item> -->
-            <ion-item>
-                <ion-label>Aberto</ion-label>
-                <ion-toggle formControlName="status"  (ionChange)="getStatus($event)" [checked]="status"></ion-toggle>
-              </ion-item>
             <ion-item>
               <ion-label color="primary">Observação</ion-label>
               <ion-textarea formControlName="observacao"></ion-textarea>
@@ -64,6 +57,7 @@
     <ion-list-header>
       <ion-label>Lista de jogos</ion-label>
     </ion-list-header>
+    <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
     <ion-item *ngFor="let item of jogos | async" (click)="acao(item.key, item)">
       <ion-avatar slot="start">
         <ion-icon name="md-albums"></ion-icon>

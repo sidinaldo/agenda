@@ -7,6 +7,7 @@ import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ListClubePage } from '../list-clube/list-clube.page';
+import { ListJogadorPage } from '../list-jogador/list-jogador.page';
 
 
 @Component({
@@ -28,7 +29,7 @@ export class JogoPage {
   public nomeMandante: string;
   public nomeVisitante: string;
   public nomeCampo: string;
-  public status: boolean = false;
+  public filter: any;
 
   constructor(
     private fb: FormBuilder,
@@ -50,9 +51,6 @@ export class JogoPage {
         Validators.required
       ])],
       visitante: ['', Validators.compose([
-        Validators.required
-      ])],
-      status: [false, Validators.compose([
         Validators.required
       ])],
       observacao: ['', Validators.compose([
@@ -91,21 +89,19 @@ export class JogoPage {
     }
 
     this.form.controls['campo'].valueChanges.subscribe(res => {
-      console.log(res)
       this.nomeCampo = res.bairro
     });
 
   }
 
-  getStatus(ev: any) {
-    const val = ev.detail.checked;  
-      this.form.patchValue({
-        status: val
-      });
-  
-    console.log(this.form.value);
+  getItems(ev: any) {
+    const val = ev.target.value;
+    // if (val && val.trim() != '') {
+    //   this.filter = this.items.filter((item) => {
+    //     return (item.clube.nome.toLowerCase().indexOf(val.toLowerCase()) > -1);
+    //   })
+    // }
   }
-
 
   async addClubes() {
     const modal = await this.modalCtl.create({
@@ -121,6 +117,19 @@ export class JogoPage {
         this.nomeMandante = res.data[0].clube.nome;
         this.nomeVisitante = res.data[1].clube.nome;
 
+      });
+
+    return await modal.present();
+  }
+
+  async addPlayers() {
+    const modal = await this.modalCtl.create({
+      component: ListJogadorPage
+    });
+
+    modal.onDidDismiss()
+      .then((res) => {
+        console.log(res)
       });
 
     return await modal.present();
@@ -199,7 +208,6 @@ export class JogoPage {
               campo: newText.campo,
               mandante: newText.mandante,
               visitante: newText.visitante,
-              status: newText.status,
               observacao: newText.observacao,
               golsVisitante: newText.golsVisitante,
               golsMandante: newText.golsMandante,
@@ -208,7 +216,6 @@ export class JogoPage {
             this.nomeMandante = newText.mandante.nome;
             this.nomeVisitante = newText.visitante.nome;
             this.nomeCampo = newText.campo.nome;
-            this.status = newText.status;
           }
         },
         {

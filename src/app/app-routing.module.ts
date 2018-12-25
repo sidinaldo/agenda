@@ -34,6 +34,10 @@ const routes: Routes = [
   {
     path: 'list',
     loadChildren: './list-clube/list-clube.module#ListClubePageModule'
+  },
+  {
+    path: 'jogador',
+    loadChildren: './jogador/jogador.module#JogadorPageModule'
   }
 ];
 
