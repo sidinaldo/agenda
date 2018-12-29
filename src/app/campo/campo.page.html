@@ -15,14 +15,14 @@
       <ion-col col-12 col-sm-12 col-md-6>
         <form [formGroup]="form">
           <h1 text-center class="oleo-script">Cadastro de Campo</h1>
-          <ion-list>            
-            
+          <ion-list>
+
             <ion-item>
               <ion-input type="text" placeholder="Nome" maxlength="140" formControlName="nome"></ion-input>
             </ion-item>
             <ion-item>
               <ion-input type="text" placeholder="Bairro" maxlength="140" formControlName="bairro"></ion-input>
-            </ion-item>           
+            </ion-item>
             <ion-item lines="none">
               <ion-button (click)="submit()">Save</ion-button>&nbsp;
               <ion-button (click)="clear()" color="medium">Clear</ion-button>&nbsp;
@@ -36,9 +36,13 @@
     <ion-list-header>
       <ion-label>Lista de jogos</ion-label>
     </ion-list-header>
-    <ion-item *ngFor="let item of items | async" (click)="acao(item.key, item)">
+    <ion-item lines="none">
+      <ion-searchbar (ionInput)="filterNome($event)"></ion-searchbar>
+    </ion-item>
+    <br>
+    <ion-item *ngFor="let item of news" (click)="acao(item)">
       <ion-avatar slot="start">
-        <ion-icon name="md-albums"></ion-icon>
+        <ion-icon name="md-albums" size="large"></ion-icon>
       </ion-avatar>
       <ion-label>
         <h2> {{item.nome}}</h2>
@@ -46,6 +50,9 @@
       </ion-label>
     </ion-item>
   </ion-list>
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)" *ngIf="totalPage < totalData">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Aguarde..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
 <ion-footer>
   <ion-toolbar color="primary" text-center>

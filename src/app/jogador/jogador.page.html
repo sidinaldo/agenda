@@ -52,10 +52,13 @@
     <ion-list-header>
       <ion-label>Lista de Jogadores</ion-label>
     </ion-list-header>
-    <!-- <ion-searchbar (ionInput)="filterNome($event)"></ion-searchbar> -->
-    <ion-item *ngFor="let item of news" (click)="acao(item.key, item)">
+    <ion-item lines="none">
+        <ion-searchbar (ionInput)="filterNome($event)"></ion-searchbar>
+    </ion-item>   
+    <br> 
+    <ion-item *ngFor="let item of news" (click)="acao(item)">
       <ion-avatar slot="start">
-        <ion-icon name="md-albums"></ion-icon>
+        <ion-icon  ios="ios-person" md="md-person" size="large"></ion-icon>
       </ion-avatar>
       <ion-label>
         <h2> {{item.nome}}</h2>

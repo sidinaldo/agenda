@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { FormGroup, FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
-import { AlertController, LoadingController, ActionSheetController, ModalController } from '@ionic/angular';
+import { AlertController, LoadingController, ActionSheetController, ModalController, InfiniteScroll } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { Observable } from 'rxjs';
@@ -21,15 +21,22 @@ export class JogoPage {
   public editar: boolean = false;
   public anos: Array<number> = [];
   public listFilter: any;
-  public jogoRef: AngularFireList<any>;
-  public jogos: Observable<any[]>;
+  public itemsRef: AngularFireList<any>;
+  public items: Observable<any[]>;
   public campoRef: AngularFireList<any>;
   public campos: Array<any> = [];
   public clubes: any;
   public nomeMandante: string;
   public nomeVisitante: string;
   public nomeCampo: string;
-  public filter: any;
+  public news: Array<any> = [];
+  public newsTemp: Array<any> = [];
+  public page = 1;
+  public perPage = 0;
+  public totalData = 0;
+  public totalPage = 0;
+  @ViewChild(InfiniteScroll) infiniteScroll: InfiniteScroll;
+
 
   constructor(
     private fb: FormBuilder,
@@ -67,12 +74,24 @@ export class JogoPage {
       duration: 2000
     }).then(res => res.present());
 
-    this.jogoRef = db.list('jogos');
-    this.jogos = this.jogoRef.snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
-      )
+    this.itemsRef = db.list('jogos');
+    this.items = this.itemsRef.snapshotChanges().pipe(
+      map(changes => {
+        return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
+      })
     );
+
+    this.items.subscribe(list => {
+      console.log(list)
+      this.newsTemp = list;
+      this.totalData = list.length;
+      this.getTopStories()
+    });
+
+    // this.form.controls['visitante'].valueChanges.subscribe(res => {
+    //   // console.log(res)
+    //   this.filterNome(null, res);
+    // });
 
     this.campoRef = db.list('campos');
     this.campoRef.snapshotChanges(['child_added']).subscribe(actions => {
@@ -80,7 +99,7 @@ export class JogoPage {
         const object2 = Object.assign({ key: action.key }, action.payload.val());
         this.campos.push(object2);
       });
-      console.log(this.campos)
+      // console.log(this.campos)
     });
 
     var ano = new Date().getFullYear();
@@ -89,18 +108,75 @@ export class JogoPage {
     }
 
     this.form.controls['campo'].valueChanges.subscribe(res => {
-      this.nomeCampo = res.bairro
+      if (res)
+        this.nomeCampo = res.bairro
     });
-
   }
 
-  getItems(ev: any) {
-    const val = ev.target.value;
-    // if (val && val.trim() != '') {
-    //   this.filter = this.items.filter((item) => {
-    //     return (item.clube.nome.toLowerCase().indexOf(val.toLowerCase()) > -1);
-    //   })
-    // }
+  getTopStories() {
+    this.news = this.newsTemp.filter((item, indx, array) => {
+      if (indx <= 5)
+        return item;
+    });
+    this.perPage = 5;
+    this.totalPage = 6;
+    console.log(this.news)
+  }
+
+  doInfinite(infiniteScroll) {
+    this.totalPage = this.page * 5;
+    setTimeout(() => {
+      let result = this.newsTemp.slice(this.page * 5);
+      for (let i = 1; i <= this.perPage; i++) {
+        if (result[i] != undefined) {
+          var n = {
+            campo: result[i].campo,
+            data: result[i].data,
+            golsMandante: result[i].golsMandante,
+            golsVisitante: result[i].golsVisitante,
+            key: result[i].key,
+            jogadores: result[i].jogadores,
+            mandante: result[i].mandante,
+            visitante: result[i].visitante,
+            observacao: result[i].observacao,
+
+          }
+          this.news.push(n);
+        }
+      }
+      this.page += 1;
+
+      infiniteScroll.target.complete();
+
+    }, 2000);
+  }
+
+  filterNome(val1: any, val2) {
+    if (this.totalData > 10)
+      this.infiniteScroll.disabled = true;
+
+    var res: string;
+    if (val1)
+      res = val1.target.value;
+
+    if (val2)
+      res = val2;
+
+    console.log(res)
+
+    if (res && res.trim() != '') {
+      this.items.subscribe(list => {
+        this.news = list.filter((r) => {
+          return (r.nome.toLowerCase().indexOf(res.toLowerCase()) > -1);
+        })
+      });
+    } else {
+      if (this.totalData > 10)
+        this.infiniteScroll.disabled = false;
+
+      this.news.length = 0;
+      this.getTopStories();
+    }
   }
 
   async addClubes() {
@@ -110,12 +186,13 @@ export class JogoPage {
 
     modal.onDidDismiss()
       .then((res) => {
+        console.log(res)
         this.form.patchValue({
-          mandante: res.data[0].clube,
-          visitante: res.data[1].clube
+          mandante: res.data[0],
+          visitante: res.data[1]
         });
-        this.nomeMandante = res.data[0].clube.nome;
-        this.nomeVisitante = res.data[1].clube.nome;
+        this.nomeMandante = res.data[0].nome;
+        this.nomeVisitante = res.data[1].nome;
 
       });
 
@@ -161,7 +238,7 @@ export class JogoPage {
   }
 
   async updateItem() {
-    this.jogoRef.update(this.form.controls['key'].value, this.form.value).then(res => {
+    this.itemsRef.update(this.form.controls['key'].value, this.form.value).then(res => {
       this.editar = false;
       this.form.reset();
       this.nomeMandante = '';
@@ -180,7 +257,7 @@ export class JogoPage {
   }
 
   deleteItem() {
-    this.jogoRef.remove(this.form.controls['key'].value);
+    this.itemsRef.remove(this.form.controls['key'].value);
   }
 
   submit() {
@@ -191,7 +268,7 @@ export class JogoPage {
     }
   }
 
-  async acao(key: string, newText: any) {
+  async acao(newText: any) {
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'Ações',
       animated: true,
@@ -200,7 +277,7 @@ export class JogoPage {
           text: 'Edit',
           icon: 'create',
           handler: () => {
-            console.log(newText, key)
+            console.log(newText)
             this.editar = true;
             this.form.patchValue({
               key: newText.key,

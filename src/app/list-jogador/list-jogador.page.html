@@ -18,13 +18,16 @@
       <ion-button (click)="dismiss()" color="primary">Incluir</ion-button>
     </ion-item>
     <ion-item lines="none">
-      <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
+      <ion-searchbar (ionInput)="filterNome($event)"></ion-searchbar>
     </ion-item>
-    <ion-item *ngFor="let entry of filter">
-      <ion-label>{{entry.clube.nome}}</ion-label>
+    <ion-item *ngFor="let entry of news">
+      <ion-label>{{entry.nome}} - {{entry.posicao}}</ion-label>
       <ion-checkbox slot="end" [(ngModel)]="entry.isChecked"></ion-checkbox>
     </ion-item>
   </ion-list>
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)" *ngIf="totalPage < totalData">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Aguarde..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
 
 <ion-footer>
