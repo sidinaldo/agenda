@@ -6,6 +6,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { JogoPage } from './jogo.page';
 import { ListClubePage } from '../list-clube/list-clube.page';
 import { ListJogadorPage } from '../list-jogador/list-jogador.page';
+import { PopoverJogadorPage } from '../popover-jogador/popover-jogador.page';
+
 
   
 
@@ -24,11 +26,13 @@ import { ListJogadorPage } from '../list-jogador/list-jogador.page';
   declarations: [
     JogoPage,
     ListClubePage,
-    ListJogadorPage
+    ListJogadorPage,
+    PopoverJogadorPage
   ],
   entryComponents:[
     ListClubePage,
-    ListJogadorPage
+    ListJogadorPage,
+    PopoverJogadorPage
   ]
 })
 export class JogoPageModule {}

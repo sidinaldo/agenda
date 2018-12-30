@@ -9,7 +9,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content padding class="auto-scroll">
   <ion-grid>
     <ion-row align-items-center justify-content-center>
       <ion-col col-12 col-sm-12 col-md-12>
@@ -17,8 +17,8 @@
           <h1 text-center class="oleo-script">Cadastro de jogo</h1>
           <ion-list>
             <ion-item>
-              <ion-button (click)="addClubes()">Add Clubes</ion-button>&nbsp;
-              <ion-button (click)="addPlayers()">Add Jogadores</ion-button>
+              <ion-button (click)="addClubes()">Clubes</ion-button>&nbsp;
+              <ion-button (click)="addPlayers()">Jogadores</ion-button>
             </ion-item>
             <ion-item>
               <ion-label slot="start">{{nomeMandante || "Mandante"}}</ion-label>&nbsp;&nbsp;
@@ -41,6 +41,9 @@
             <ion-item>
               <ion-label color="primary">Observação</ion-label>
               <ion-textarea formControlName="observacao"></ion-textarea>
+            </ion-item>
+            <ion-item>
+              <ion-icon ios="ios-people" md="md-people" (click)="listJogadores()" title="Jogadores" size="large"></ion-icon>
             </ion-item>
             <ion-item lines="none">
               <ion-button (click)="submit()">Save</ion-button>&nbsp;

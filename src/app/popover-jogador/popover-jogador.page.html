@@ -1,0 +1,18 @@
+<ion-content padding class="auto-scroll">
+  <ion-list>
+    <ion-list-header>
+      <h5 color="medium">Lista de Jogadores</h5>
+    </ion-list-header>
+    <ion-item (click)="close()">
+        <ion-icon ios="ios-close" md="md-close" ></ion-icon>  &nbsp; Close
+    </ion-item>
+    <ion-item *ngFor="let item of list">
+      <ion-label slot="start">
+        <h2>{{item.nome}}</h2>
+        <p>{{item.posicao}}</p>
+      </ion-label>
+      <ion-badge color="success" slot="end">{{item.gol}}</ion-badge>
+    </ion-item>
+
+  </ion-list>
+</ion-content>

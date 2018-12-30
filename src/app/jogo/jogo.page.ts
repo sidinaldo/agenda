@@ -1,13 +1,15 @@
 import { Component, ViewChild } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { FormGroup, FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
-import { AlertController, LoadingController, ActionSheetController, ModalController, InfiniteScroll } from '@ionic/angular';
+import { AlertController, LoadingController, ActionSheetController, ModalController, InfiniteScroll, PopoverController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ListClubePage } from '../list-clube/list-clube.page';
 import { ListJogadorPage } from '../list-jogador/list-jogador.page';
+import { PopoverJogadorPage } from '../popover-jogador/popover-jogador.page';
+
 
 
 @Component({
@@ -17,15 +19,12 @@ import { ListJogadorPage } from '../list-jogador/list-jogador.page';
 export class JogoPage {
   public user: any;
   public form: FormGroup;
-  public formFilter: FormGroup;
   public editar: boolean = false;
   public anos: Array<number> = [];
-  public listFilter: any;
   public itemsRef: AngularFireList<any>;
   public items: Observable<any[]>;
   public campoRef: AngularFireList<any>;
   public campos: Array<any> = [];
-  public clubes: any;
   public nomeMandante: string;
   public nomeVisitante: string;
   public nomeCampo: string;
@@ -44,7 +43,8 @@ export class JogoPage {
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
     public actionSheetCtrl: ActionSheetController,
-    public modalCtl: ModalController
+    public modalCtl: ModalController,
+    public popoverController: PopoverController
   ) {
     this.form = this.fb.group({
       key: [''],
@@ -88,11 +88,6 @@ export class JogoPage {
       this.getTopStories()
     });
 
-    // this.form.controls['visitante'].valueChanges.subscribe(res => {
-    //   // console.log(res)
-    //   this.filterNome(null, res);
-    // });
-
     this.campoRef = db.list('campos');
     this.campoRef.snapshotChanges(['child_added']).subscribe(actions => {
       actions.forEach(action => {
@@ -111,6 +106,18 @@ export class JogoPage {
       if (res)
         this.nomeCampo = res.bairro
     });
+  }
+
+  async listJogadores() {
+    console.log(this.form.controls['jogadores'].valid, this.form.controls['jogadores'])
+    console.log(this.form.controls['jogadores'].dirty, this.form.controls['jogadores'].pristine)
+    const popover = await this.popoverController.create({
+      component: PopoverJogadorPage,
+      // event: ,
+      componentProps: { list: this.form.controls["jogadores"].value },
+      translucent: true
+    });
+    return await popover.present();
   }
 
   getTopStories() {
@@ -167,7 +174,7 @@ export class JogoPage {
     if (res && res.trim() != '') {
       this.items.subscribe(list => {
         this.news = list.filter((r) => {
-          return (r.nome.toLowerCase().indexOf(res.toLowerCase()) > -1);
+          return (r.visitante.nome.toLowerCase().indexOf(res.toLowerCase()) > -1);
         })
       });
     } else {
@@ -206,14 +213,17 @@ export class JogoPage {
 
     modal.onDidDismiss()
       .then((res) => {
-        console.log(res)
+        this.form.patchValue({
+          jogadores: res.data
+        });
+        console.log(this.form.value, res.data)
       });
 
     return await modal.present();
   }
 
   async addItem() {
-    console.log(this.form.value)
+    // console.log(this.form.value)
     const loading = await this.loadingCtrl.create({
       message: 'Salvando jogo...',
       duration: 2000
@@ -277,7 +287,6 @@ export class JogoPage {
           text: 'Edit',
           icon: 'create',
           handler: () => {
-            console.log(newText)
             this.editar = true;
             this.form.patchValue({
               key: newText.key,
