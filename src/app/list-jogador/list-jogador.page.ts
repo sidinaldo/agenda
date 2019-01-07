@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { LoadingController, ModalController, InfiniteScroll } from '@ionic/angular';
+import { LoadingController, ModalController, InfiniteScroll, NavParams } from '@ionic/angular';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -20,17 +20,21 @@ export class ListJogadorPage {
   public totalData = 0;
   public totalPage = 0;
   @ViewChild(InfiniteScroll) infiniteScroll: InfiniteScroll;
+  public listPlayers: Array<any> = [];
 
   constructor(
     private db: AngularFireDatabase,
     private loadingCtrl: LoadingController,
-    public modalCtl: ModalController
+    public modalCtl: ModalController,
+    public navParams: NavParams
   ) {
 
     loadingCtrl.create({
       message: 'Aguarde...',
       duration: 2000
     }).then(res => res.present());
+
+    this.listPlayers = navParams.get("jogadores");
 
     this.itemsRef = db.list('jogadores');
     this.items = this.itemsRef.snapshotChanges().pipe(
@@ -40,10 +44,43 @@ export class ListJogadorPage {
     );
 
     this.items.subscribe(list => {
-      this.newsTemp = list;
+      if (this.listPlayers) {
+        list.forEach(l => {
+          var n = {
+            nome: l.nome,
+            apelido: l.apelido,
+            posicao: l.posicao,
+            ativo: l.ativo,
+            key: l.key,
+            gol: l.gol || 0,
+            isChecked: l.isChecked || false
+          }
+
+          console.log(n)
+
+        });
+        
+      } else {
+        this.newsTemp = list;
+        console.log("não tem players", this.listPlayers, this.newsTemp)
+      }
+
       this.totalData = list.length;
       this.getTopStories()
     });
+  }
+
+  includeCheked(players: Array<any>): Array<any> {
+    players.forEach(r => {
+      this.listPlayers.forEach(l => {
+        if (l.key == r.key) {
+          r.gol = l.gol;
+          r.isChecked = true;
+        }
+        console.log(players)
+      });
+    })
+    return players;
   }
 
   getTopStories() {
@@ -66,9 +103,13 @@ export class ListJogadorPage {
             apelido: result[i].apelido,
             posicao: result[i].posicao,
             ativo: result[i].ativo,
-            key: result[i].key
+            key: result[i].key,
+            gol: result[i].gol || 0,
+            isChecked: result[i].isChecked || false
           }
+          console.log(n)
           this.news.push(n);
+          // console.log(this.newsTemp, this.news);
         }
       }
       this.page += 1;
@@ -78,11 +119,12 @@ export class ListJogadorPage {
     }, 2000);
   }
 
+
   filterNome(val: any) {
     if (this.totalData > 10)
       this.infiniteScroll.disabled = true;
 
-      var res = val.target.value;
+    var res = val.target.value;
     if (res && res.trim() != '') {
       this.items.subscribe(list => {
         this.news = list.filter((r) => {
@@ -98,7 +140,7 @@ export class ListJogadorPage {
     }
   }
 
-  
+
   dismiss() {
     this.modalCtl.dismiss(
       this.checked()

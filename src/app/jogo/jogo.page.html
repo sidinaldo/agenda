@@ -43,7 +43,9 @@
               <ion-textarea formControlName="observacao"></ion-textarea>
             </ion-item>
             <ion-item>
-              <ion-icon ios="ios-people" md="md-people" (click)="listJogadores()" title="Jogadores" size="large"></ion-icon>
+              <ion-icon ios="ios-people" md="md-people" (click)="listJogadores()" title="Jogadores" size="large"
+              [ngStyle]="{'color':listPlayers > 0 ? 'green' : 'red' }"></ion-icon>
+              <ion-badge color="success" slot="end">{{listPlayers}}</ion-badge>
             </ion-item>
             <ion-item lines="none">
               <ion-button (click)="submit()">Save</ion-button>&nbsp;

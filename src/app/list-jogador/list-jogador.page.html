@@ -21,7 +21,7 @@
       <ion-searchbar (ionInput)="filterNome($event)"></ion-searchbar>
     </ion-item>
     <ion-item *ngFor="let entry of news">
-      <ion-checkbox slot="start" [(ngModel)]="entry.isChecked"></ion-checkbox>
+      <ion-checkbox slot="start" [(ngModel)]="entry.isChecked"  ></ion-checkbox>
       <ion-label>{{entry.nome}} - {{entry.posicao}}</ion-label>
       <ion-input style="flex: 0.4;" type="text" placeholder="gol" slot="end" [(ngModel)]="entry.gol"></ion-input>
 

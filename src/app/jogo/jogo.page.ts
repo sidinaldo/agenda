@@ -30,6 +30,7 @@ export class JogoPage {
   public nomeCampo: string;
   public news: Array<any> = [];
   public newsTemp: Array<any> = [];
+  public listPlayers: number = 0;
   public page = 1;
   public perPage = 0;
   public totalData = 0;
@@ -82,7 +83,6 @@ export class JogoPage {
     );
 
     this.items.subscribe(list => {
-      console.log(list)
       this.newsTemp = list;
       this.totalData = list.length;
       this.getTopStories()
@@ -109,8 +109,6 @@ export class JogoPage {
   }
 
   async listJogadores() {
-    console.log(this.form.controls['jogadores'].valid, this.form.controls['jogadores'])
-    console.log(this.form.controls['jogadores'].dirty, this.form.controls['jogadores'].pristine)
     const popover = await this.popoverController.create({
       component: PopoverJogadorPage,
       // event: ,
@@ -208,7 +206,8 @@ export class JogoPage {
 
   async addPlayers() {
     const modal = await this.modalCtl.create({
-      component: ListJogadorPage
+      component: ListJogadorPage,
+      componentProps: { 'jogadores': this.form.controls['jogadores'].value }
     });
 
     modal.onDidDismiss()
@@ -216,7 +215,7 @@ export class JogoPage {
         this.form.patchValue({
           jogadores: res.data
         });
-        console.log(this.form.value, res.data)
+        // console.log(this.form.value, res.data)
       });
 
     return await modal.present();
@@ -302,6 +301,8 @@ export class JogoPage {
             this.nomeMandante = newText.mandante.nome;
             this.nomeVisitante = newText.visitante.nome;
             this.nomeCampo = newText.campo.nome;
+            if (newText['jogadores'])
+              this.listPlayers = this.form.controls['jogadores'].value.length;
           }
         },
         {
@@ -332,6 +333,7 @@ export class JogoPage {
     this.nomeMandante = '';
     this.nomeVisitante = '';
     this.nomeCampo = ''
+    this.listPlayers = 0
   }
 
   addJogador(): any {
