@@ -14,12 +14,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 
 export const config = {
   firebase: {
-    apiKey: "AIzaSyButVb9XDQuyVUrJOAoTj3b5AupZixHjWo",
-    authDomain: "agenda-time.firebaseapp.com",
-    databaseURL: "https://agenda-time.firebaseio.com",
-    projectId: "agenda-time",
-    storageBucket: "agenda-time.appspot.com",
-    messagingSenderId: "256408433179"
+    ..
   }
 };
 
